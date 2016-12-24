@@ -11,6 +11,9 @@
 
 const char *mqtt_server = "iot.eclipse.org";
 char mqtt_id[33];
+long color = 0;
+unsigned long start;
+int period = 1;
 
 WiFiClient wifiClient;
 PubSubClient mqttClient(wifiClient);
@@ -88,10 +91,13 @@ void setupOTA() {
   ArduinoOTA.begin();  
 }
 
-void setColor(long val) {
+void setColor(long val, int alpha) {
   int r = (val >> 16) & 0xff;
   int g = (val >> 8) & 0xff;
   int b = val & 0xff;
+  r = map(alpha, 0, 255, 0, r);
+  g = map(alpha, 0, 255, 0, g);
+  b = map(alpha, 0, 255, 0, b);
   analogWrite(RED_LED, r);
   analogWrite(GREEN_LED, g);
   analogWrite(BLUE_LED, b);
@@ -104,11 +110,13 @@ void messageReceived(char* topic, unsigned char* payload, unsigned int length) {
     return;
   }
   // parse the hexidecimal value
-  char color[7];
-  memcpy(color, &payload[1], 6);
-  color[6] = '\0';
-  long val = strtol(color, NULL, 16); // base 16 (hex)
-  setColor(val);
+  char str[7];
+  memcpy(str, &payload[1], 6);
+  str[6] = '\0';
+  color = strtol(str, NULL, 16); // base 16 (hex)
+  start = millis();
+  setColor(color, 255);
+  period = random(6, 16);
   Serial.println(color);
 }
 
@@ -141,5 +149,12 @@ void loop() {
   if (!mqttClient.connected())
     reconnect();
   mqttClient.loop();
+
+  if (color > 0) {
+    int alpha = (millis() - start)/period % 512;
+    if (alpha < 256) alpha = 255-alpha;
+    else alpha = alpha-256;
+    setColor(color, alpha);
+  }
 }
 
