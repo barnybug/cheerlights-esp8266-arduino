@@ -1,6 +1,9 @@
+#include <Arduino.h>
+
 #include <ESP8266WiFi.h>
-#include <ArduinoOTA.h>
 #include <PubSubClient.h>
+#include <ESP8266mDNS.h>
+#include <ArduinoOTA.h>
 
 // put your wifi credentials in here
 #include "credentials.h"
@@ -25,7 +28,7 @@ void setup() {
   pinMode(RED_LED, OUTPUT);
   pinMode(GREEN_LED, OUTPUT);
   pinMode(BLUE_LED, OUTPUT);
-  
+
   // set range to 0-0xff
   analogWriteRange(255);
   // lower the default frequency from 1khz, which makes an awful high pitch noise when modulating
@@ -88,7 +91,7 @@ void setupOTA() {
     else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
     else if (error == OTA_END_ERROR) Serial.println("End Failed");
   });
-  ArduinoOTA.begin();  
+  ArduinoOTA.begin();
 }
 
 void setColor(long val, int alpha) {
@@ -157,4 +160,3 @@ void loop() {
     setColor(color, alpha);
   }
 }
-
