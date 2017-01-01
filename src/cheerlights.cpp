@@ -21,6 +21,10 @@ int period = 1;
 WiFiClient wifiClient;
 PubSubClient mqttClient(wifiClient);
 
+void setupWifi();
+void setupOTA();
+void setupMqtt();
+
 void setup() {
   Serial.begin(76800);
   Serial.println("Booting");
@@ -49,6 +53,8 @@ void setup() {
 void setupWifi() {
   Serial.print("Connecting to ");
   Serial.println(wifi_ssid);
+  WiFi.mode(WIFI_STA);
+  WiFi.hostname("cheerlights");
   WiFi.begin(wifi_ssid, wifi_password);
 
   while (WiFi.status() != WL_CONNECTED) {
