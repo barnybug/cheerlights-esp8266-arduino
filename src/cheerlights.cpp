@@ -12,7 +12,7 @@
 #define GREEN_LED 5
 #define BLUE_LED  12
 
-const char *mqtt_server = "iot.eclipse.org";
+const char *mqtt_server = "mqtt.cheerlights.com";
 char mqtt_id[33];
 long color = 0;
 unsigned long start;
